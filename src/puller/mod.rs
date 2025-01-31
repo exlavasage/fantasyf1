@@ -25,9 +25,8 @@ impl Race {
     pub fn get_quali_date(&self) -> NaiveDate {
         self.sprint_qualifying
             .as_ref()
-            .unwrap_or(&self.qualifying.as_ref().unwrap())
+            .unwrap_or(self.qualifying.as_ref().unwrap())
             .date
-            .clone()
     }
 }
 

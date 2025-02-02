@@ -1,39 +1,84 @@
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 
-use fantasyf1::puller;
+use fantasyf1::{puller, score};
 
-#[derive(Parser)]
+#[derive(ValueEnum, Debug, Clone)]
+enum Mode {
+    Races,
+    Results,
+    Drivers,
+    Constructors,
+    Score,
+}
+
+#[derive(Debug, Clone, Parser)]
 struct Args {
-    #[clap(short, long)]
+    #[arg(short, long)]
     year: Option<u32>,
-    #[clap(short, long)]
-    results: bool,
+    #[arg(short, long)]
+    round: Option<u32>,
+    #[arg(short, long, value_enum)]
+    mode: Mode,
 }
 
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
 
-    if args.results {
-        let results = puller::get_race_results(args.year, None)
-            .await
-            .expect("Failed to get results");
+    eprintln!("Args: {:?}", args);
 
-        println!("{}", serde_json::to_string_pretty(&results).unwrap());
-    } else {
-        let races = puller::get_races(args.year)
-            .await
-            .expect("Failed to get races");
+    match args.mode {
+        Mode::Results => {
+            let results = puller::get_race_results(args.year, args.round)
+                .await
+                .expect("Failed to get results");
 
-        for race in races {
-            println!(
-                "Race: {}, Date: {}, QualiData: {} Location: {}, {}",
-                race.race_name,
-                race.date,
-                race.get_quali_date(),
-                race.circuit.location.locality,
-                race.circuit.location.country
-            );
+            println!("{}", serde_json::to_string_pretty(&results).unwrap());
+        }
+        Mode::Races => {
+            let races = puller::get_races(args.year)
+                .await
+                .expect("Failed to get races");
+
+            for race in races {
+                println!(
+                    "Race: {}, Date: {}, QualiData: {} Location: {}",
+                    race.race_name,
+                    race.date,
+                    race.get_quali_date(),
+                    race.circuit.location.locality,
+                );
+            }
+        }
+        Mode::Constructors => {
+            let constructors = puller::get_constructors(args.year)
+                .await
+                .expect("Failed to get constructors");
+
+            for constructor in constructors {
+                println!("Constructor: {}", constructor.name);
+            }
+        }
+        Mode::Score => {
+            let race = puller::get_race_results(args.year, args.round)
+                .await
+                .expect("Failed to get results");
+
+            println!("Score for: {}", race.race_name);
+            for result in race.results {
+                println!(
+                    "{}: {} -> {}",
+                    result.driver.family_name,
+                    result
+                        .get_position()
+                        .map(|p| p.to_string())
+                        .unwrap_or(format!("{}({})", result.position, result.position_text)),
+                    score::to_score(&result)
+                );
+            }
+        }
+        Mode::Drivers => {
+            todo!();
         }
     }
 }

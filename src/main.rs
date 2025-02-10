@@ -6,7 +6,6 @@ use fantasyf1::{puller, score};
 enum Mode {
     Races,
     Results,
-    Drivers,
     Constructors,
     Score,
 }
@@ -67,18 +66,16 @@ async fn main() {
             println!("Score for: {}", race.race_name);
             for result in race.results {
                 println!(
-                    "{}: {} -> {}",
+                    "{}: {} -> {} 10th: {}",
                     result.driver.family_name,
                     result
                         .get_position()
                         .map(|p| p.to_string())
                         .unwrap_or(format!("{}({})", result.position, result.position_text)),
-                    score::to_score(&result)
+                    score::to_score(&result),
+                    score::tenth_score(&result),
                 );
             }
-        }
-        Mode::Drivers => {
-            todo!();
         }
     }
 }

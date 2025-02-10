@@ -31,7 +31,7 @@ impl Race {
 }
 
 #[serde_alias(CamelCase, PascalCase)]
-#[derive(Deserialize, Debug, Clone, Serialize)]
+#[derive(Deserialize, Debug, Default, Clone, Serialize)]
 pub struct RaceResult {
     pub position: String,
     pub position_text: String,
@@ -41,19 +41,28 @@ pub struct RaceResult {
 }
 
 impl RaceResult {
+    pub fn new(position: String, constructor: String) -> Self {
+        Self {
+            position_text: position.clone(),
+            position,
+            constructor: Constructor { name: constructor },
+            ..Default::default()
+        }
+    }
+
     pub fn get_position(&self) -> Option<u32> {
         self.position_text.parse().ok()
     }
 }
 
 #[serde_alias(CamelCase, PascalCase)]
-#[derive(Deserialize, Debug, Clone, Serialize)]
+#[derive(Deserialize, Debug, Default, Clone, Serialize)]
 pub struct Driver {
     pub given_name: String,
     pub family_name: String,
 }
 
-#[derive(Deserialize, Debug, Clone, Serialize)]
+#[derive(Deserialize, Debug, Default, Clone, Serialize)]
 pub struct Constructor {
     pub name: String,
 }

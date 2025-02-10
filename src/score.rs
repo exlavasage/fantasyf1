@@ -89,3 +89,36 @@ fn rookie_mult(result: &RaceResult) -> u32 {
 pub fn to_score(result: &RaceResult) -> u32 {
     base_score(result) * rookie_mult(result) * SCORE_MAPPING.get(&result.constructor.name).unwrap()
 }
+
+pub fn tenth_score(result: &RaceResult) -> u32 {
+    if let Some(position) = result.get_position() {
+        10 - position.abs_diff(10)
+    } else {
+        0
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tenth_score() {
+        assert_eq!(
+            tenth_score(&RaceResult::new("10".to_owned(), "Aston Martin".to_owned())),
+            10
+        );
+        assert_eq!(
+            tenth_score(&RaceResult::new("1".to_owned(), "Aston Martin".to_owned())),
+            1
+        );
+        assert_eq!(
+            tenth_score(&RaceResult::new("19".to_owned(), "Aston Martin".to_owned())),
+            1
+        );
+        assert_eq!(
+            tenth_score(&RaceResult::new("R".to_owned(), "Aston Martin".to_owned())),
+            0
+        );
+    }
+}

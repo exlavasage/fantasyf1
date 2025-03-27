@@ -1,6 +1,6 @@
 use clap::{Parser, ValueEnum};
 
-use fantasyf1::{puller, score};
+use fantasyf1::{puller, result};
 
 #[derive(ValueEnum, Debug, Clone)]
 enum Mode {
@@ -24,8 +24,6 @@ struct Args {
 async fn main() {
     let args = Args::parse();
 
-    eprintln!("Args: {:?}", args);
-
     match args.mode {
         Mode::Results => {
             let results = puller::get_race_results(args.year, args.round)
@@ -39,13 +37,14 @@ async fn main() {
                 .await
                 .expect("Failed to get races");
 
+            println!("Race          \tLocation\tDate      \tQualiData");
             for race in races {
                 println!(
-                    "Race: {}, Date: {}, QualiData: {} Location: {}",
-                    race.race_name,
-                    race.date,
-                    race.get_quali_date(),
-                    race.circuit.location.locality,
+                    "{race:15}\t{location:15}\t{date:20}\t{quali:20}",
+                    race = race.name(),
+                    date = race.date,
+                    quali = race.get_quali_date(),
+                    location = race.location()
                 );
             }
         }
@@ -64,18 +63,7 @@ async fn main() {
                 .expect("Failed to get results");
 
             println!("Score for: {}", race.race_name);
-            for result in race.results {
-                println!(
-                    "{}: {} -> {} 10th: {}",
-                    result.driver.family_name,
-                    result
-                        .get_position()
-                        .map(|p| p.to_string())
-                        .unwrap_or(format!("{}({})", result.position, result.position_text)),
-                    score::to_score(&result),
-                    score::tenth_score(&result),
-                );
-            }
+            result::print_results(&race);
         }
     }
 }

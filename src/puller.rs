@@ -16,8 +16,10 @@ pub struct Race {
     pub circuit: Circuit,
     pub qualifying: Option<Session>,
     pub sprint_qualifying: Option<Session>,
-    #[serde(default)]
+    #[serde(default, alias = "SprintResults")]
     pub results: Vec<RaceResult>,
+    #[serde(default)]
+    pub sprint_results: Vec<RaceResult>,
 }
 
 impl Race {
@@ -27,6 +29,14 @@ impl Race {
             .as_ref()
             .unwrap_or(self.qualifying.as_ref().unwrap())
             .date
+    }
+
+    pub fn name(&self) -> String {
+        deunicode::deunicode(self.race_name.trim_end_matches("Grand Prix"))
+    }
+
+    pub fn location(&self) -> String {
+        deunicode::deunicode(&self.circuit.location.locality)
     }
 }
 
@@ -38,6 +48,8 @@ pub struct RaceResult {
     pub driver: Driver,
     pub constructor: Constructor,
     pub time: Option<Time>,
+    #[serde(default)]
+    pub sprint: bool,
 }
 
 impl RaceResult {
@@ -60,6 +72,12 @@ impl RaceResult {
 pub struct Driver {
     pub given_name: String,
     pub family_name: String,
+}
+
+impl Driver {
+    pub fn get_name(&self) -> String {
+        deunicode::deunicode(&self.family_name)
+    }
 }
 
 #[derive(Deserialize, Debug, Default, Clone, Serialize)]
@@ -129,6 +147,8 @@ pub async fn get_races(year: Option<u32>) -> Result<Vec<Race>> {
 }
 
 pub async fn get_race_results(year: Option<u32>, round: Option<u32>) -> Result<Race> {
+    let sprint_result = get_sprint_results(year, round).await?;
+
     let year = year.map_or("current".to_string(), |y| y.to_string());
     let round = round.map_or("last".to_string(), |r| r.to_string());
 
@@ -137,7 +157,36 @@ pub async fn get_race_results(year: Option<u32>, round: Option<u32>) -> Result<R
     let response = reqwest::get(&url).await?;
     let json: serde_json::Value = response.json().await?;
     let api_response: ApiResponse = serde_json::from_value(json)?;
-    Ok(api_response.mr_data.race_table.unwrap().races[0].clone())
+
+    let mut result = api_response.mr_data.race_table.unwrap().races[0].clone();
+    result.sprint_results = sprint_result;
+
+    Ok(result)
+}
+
+pub async fn get_sprint_results(year: Option<u32>, round: Option<u32>) -> Result<Vec<RaceResult>> {
+    let year = year.map_or("current".to_string(), |y| y.to_string());
+    let round = round.map_or("last".to_string(), |r| r.to_string());
+
+    let url = format!("{}/{}/{}/sprint.json", BASE_URL, year, round);
+
+    let response = reqwest::get(&url).await?;
+    let json: serde_json::Value = response.json().await?;
+    let api_response: ApiResponse = serde_json::from_value(json)?;
+
+    if let Some(race) = api_response.mr_data.race_table.unwrap().races.first() {
+        Ok(race
+            .results
+            .iter()
+            .map(|r| {
+                let mut r = r.clone();
+                r.sprint = true;
+                r
+            })
+            .collect())
+    } else {
+        Ok(Vec::new())
+    }
 }
 
 pub async fn get_constructors(year: Option<u32>) -> Result<Vec<Constructor>> {
@@ -162,7 +211,7 @@ mod tests {
                 for race in races {
                     println!(
                         "Race: {}, Date: {}, Location: {}, {}",
-                        race.race_name,
+                        race.name(),
                         race.date,
                         race.circuit.location.locality,
                         race.circuit.location.country

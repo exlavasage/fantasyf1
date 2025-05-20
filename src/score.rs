@@ -31,6 +31,8 @@ static SCORE_MAPPING: LazyLock<HashMap<String, u32>> = LazyLock::new(|| {
     m.insert("Williams".to_string(), SCORE_MULT_BOT);
     m.insert("Sauber".to_string(), SCORE_MULT_BOT);
 
+    m.insert("Retired".to_string(), 0);
+
     m
 });
 
@@ -44,6 +46,7 @@ static SCORE_ROOKIES: LazyLock<HashMap<String, bool>> = LazyLock::new(|| {
     s.insert("Hadjar".to_string(), true);
     s.insert("Bearman".to_string(), true);
     s.insert("Bortoleto".to_string(), true);
+    s.insert("Colapinto".to_string(), true);
 
     // known returning
     s.insert("Piastri".to_string(), false);

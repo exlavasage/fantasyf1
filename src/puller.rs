@@ -62,6 +62,21 @@ impl RaceResult {
         }
     }
 
+    pub fn retired(driver: &str) -> Self {
+        Self {
+            driver: Driver {
+                given_name: driver.into(),
+                family_name: driver.into(),
+            },
+            position: String::from("R"),
+            position_text: String::from(""),
+            constructor: Constructor {
+                name: String::from("Retired"),
+            },
+            ..Default::default()
+        }
+    }
+
     pub fn get_position(&self) -> Option<u32> {
         self.position_text.parse().ok()
     }

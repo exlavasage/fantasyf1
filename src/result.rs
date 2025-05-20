@@ -23,6 +23,7 @@ enum DriverId {
     Sainz = 18,
     Hulkenberg = 19,
     Bortoleto = 20,
+    Colapinto = 21,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -61,6 +62,7 @@ impl std::str::FromStr for DriverId {
             "Sainz" => Ok(DriverId::Sainz),
             "Hulkenberg" => Ok(DriverId::Hulkenberg),
             "Bortoleto" => Ok(DriverId::Bortoleto),
+            "Colapinto" => Ok(DriverId::Colapinto),
             _ => Err(ParseDriverIdError),
         }
     }
@@ -72,10 +74,18 @@ pub struct RaceResults {
 
 impl RaceResults {
     pub fn new(race: &Race) -> Self {
+        let gone = vec!["Doohan"];
         let mut race = race.clone();
-        RaceResults::sort_results(&mut race.results);
-        RaceResults::sort_results(&mut race.sprint_results);
 
+        race.results
+            .extend(gone.iter().map(|&driver| RaceResult::retired(driver)));
+        RaceResults::sort_results(&mut race.results);
+
+        if !race.sprint_results.is_empty() {
+            race.sprint_results
+                .extend(gone.iter().map(|&driver| RaceResult::retired(driver)));
+            RaceResults::sort_results(&mut race.sprint_results);
+        }
         Self { race }
     }
 

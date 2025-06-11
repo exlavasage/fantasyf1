@@ -74,7 +74,7 @@ pub struct RaceResults {
 
 impl RaceResults {
     pub fn new(race: &Race) -> Self {
-        let gone = vec!["Doohan"];
+        let gone = ["Doohan"];
         let mut race = race.clone();
 
         race.results

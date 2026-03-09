@@ -9,7 +9,7 @@ static SCORE_MULT_MID: u32 = 2;
 static SCORE_MULT_BOT: u32 = 3;
 static SCORE_MULT_ROOKIE: u32 = 2;
 
-// NOTE: This file has year specific values, currently 2025
+// NOTE: This file has year specific values, currently 2026
 // Will need to be updated every year
 
 static SCORE_MAPPING: LazyLock<HashMap<String, u32>> = LazyLock::new(|| {
@@ -22,14 +22,15 @@ static SCORE_MAPPING: LazyLock<HashMap<String, u32>> = LazyLock::new(|| {
     m.insert("Red Bull".to_string(), SCORE_MULT_TOP);
 
     // Mid
-    m.insert("Aston Martin".to_string(), SCORE_MULT_MID);
-    m.insert("Alpine F1 Team".to_string(), SCORE_MULT_MID);
+    m.insert("Williams".to_string(), SCORE_MULT_MID);
     m.insert("RB F1 Team".to_string(), SCORE_MULT_MID);
+    m.insert("Aston Martin".to_string(), SCORE_MULT_MID);
     m.insert("Haas F1 Team".to_string(), SCORE_MULT_MID);
+    m.insert("Audi".to_string(), SCORE_MULT_MID);
 
     // Bot
-    m.insert("Williams".to_string(), SCORE_MULT_BOT);
-    m.insert("Sauber".to_string(), SCORE_MULT_BOT);
+    m.insert("Alpine F1 Team".to_string(), SCORE_MULT_BOT);
+    m.insert("Cadillac F1 Team".to_string(), SCORE_MULT_BOT);
 
     m.insert("Retired".to_string(), 0);
 
@@ -40,13 +41,7 @@ static SCORE_ROOKIES: LazyLock<HashMap<String, bool>> = LazyLock::new(|| {
     let mut s = HashMap::new();
 
     // Known rookies
-    s.insert("Lawson".to_string(), true);
-    s.insert("Antonelli".to_string(), true);
-    s.insert("Doohan".to_string(), true);
-    s.insert("Hadjar".to_string(), true);
-    s.insert("Bearman".to_string(), true);
-    s.insert("Bortoleto".to_string(), true);
-    s.insert("Colapinto".to_string(), true);
+    s.insert("Lindblad".to_string(), true);
 
     // known returning
     s.insert("Piastri".to_string(), false);
@@ -58,11 +53,19 @@ static SCORE_ROOKIES: LazyLock<HashMap<String, bool>> = LazyLock::new(|| {
     s.insert("Stroll".to_string(), false);
     s.insert("Alonso".to_string(), false);
     s.insert("Gasly".to_string(), false);
-    s.insert("Tsunoda".to_string(), false);
     s.insert("Ocon".to_string(), false);
     s.insert("Albon".to_string(), false);
     s.insert("Sainz".to_string(), false);
     s.insert("Hulkenberg".to_string(), false);
+    s.insert("Lawson".to_string(), false);
+    s.insert("Antonelli".to_string(), false);
+    s.insert("Doohan".to_string(), false);
+    s.insert("Hadjar".to_string(), false);
+    s.insert("Bearman".to_string(), false);
+    s.insert("Bortoleto".to_string(), false);
+    s.insert("Colapinto".to_string(), false);
+    s.insert("Perez".to_string(), false);
+    s.insert("Bottas".to_string(), false);
 
     s
 });

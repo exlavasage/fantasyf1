@@ -16,7 +16,7 @@ struct Args {
     year: Option<u32>,
     #[arg(short, long)]
     round: Option<u32>,
-    #[arg(short, long, value_enum)]
+    #[arg(short, long, value_enum, default_value_t=Mode::Score)]
     mode: Mode,
 }
 

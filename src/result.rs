@@ -3,27 +3,28 @@ use crate::score;
 
 #[derive(Debug, Clone)]
 enum DriverId {
-    Piastri = 1,
-    Norris = 2,
-    Leclerc = 3,
-    Hamilton = 4,
+    Norris = 1,
+    Piastri = 2,
+    Russell = 3,
+    Antonelli = 4,
     Verstappen = 5,
-    Lawson = 6,
-    Russell = 7,
-    Antonelli = 8,
-    Stroll = 9,
-    Alonso = 10,
-    Gasly = 11,
-    Doohan = 12,
-    Hadjar = 13,
-    Tsunoda = 14,
-    Ocon = 15,
-    Bearman = 16,
-    Albon = 17,
-    Sainz = 18,
-    Hulkenberg = 19,
-    Bortoleto = 20,
-    Colapinto = 21,
+    Hadjar = 6,
+    Leclerc = 7,
+    Hamilton = 8,
+    Albon = 9,
+    Sainz = 10,
+    Lawson = 11,
+    Lindblad = 12,
+    Alonso = 13,
+    Stroll = 14,
+    Bearman = 15,
+    Ocon = 16,
+    Hulkenberg = 17,
+    Bortoleto = 18,
+    Gasly = 19,
+    Colapinto = 20,
+    Bottas = 21,
+    Perez = 22,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -47,15 +48,14 @@ impl std::str::FromStr for DriverId {
             "Leclerc" => Ok(DriverId::Leclerc),
             "Hamilton" => Ok(DriverId::Hamilton),
             "Verstappen" => Ok(DriverId::Verstappen),
-            "Lawson" => Ok(DriverId::Lawson),
+            "Hadjar" => Ok(DriverId::Hadjar),
             "Russell" => Ok(DriverId::Russell),
             "Antonelli" => Ok(DriverId::Antonelli),
             "Stroll" => Ok(DriverId::Stroll),
             "Alonso" => Ok(DriverId::Alonso),
             "Gasly" => Ok(DriverId::Gasly),
-            "Doohan" => Ok(DriverId::Doohan),
-            "Hadjar" => Ok(DriverId::Hadjar),
-            "Tsunoda" => Ok(DriverId::Tsunoda),
+            "Lawson" => Ok(DriverId::Lawson),
+            "Lindblad" => Ok(DriverId::Lindblad),
             "Ocon" => Ok(DriverId::Ocon),
             "Bearman" => Ok(DriverId::Bearman),
             "Albon" => Ok(DriverId::Albon),
@@ -63,6 +63,8 @@ impl std::str::FromStr for DriverId {
             "Hulkenberg" => Ok(DriverId::Hulkenberg),
             "Bortoleto" => Ok(DriverId::Bortoleto),
             "Colapinto" => Ok(DriverId::Colapinto),
+            "Bottas" => Ok(DriverId::Bottas),
+            "Perez" => Ok(DriverId::Perez),
             _ => Err(ParseDriverIdError),
         }
     }
@@ -74,7 +76,7 @@ pub struct RaceResults {
 
 impl RaceResults {
     pub fn new(race: &Race) -> Self {
-        let gone = ["Doohan"];
+        let gone = [];
         let mut race = race.clone();
 
         race.results
